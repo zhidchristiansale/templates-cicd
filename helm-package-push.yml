@@ -13,7 +13,8 @@ parameters:
     default: ''
   - name: tag
     default: '1.0.0'
-    
+
+stages:    
 - stage: Helm
   displayName: Helm Package and Push Stage
   jobs:
