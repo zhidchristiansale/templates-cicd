@@ -1,0 +1,33 @@
+parameters:
+  - name: vmImageName
+    default: 'ubuntu-latest'
+  - name: acruser
+    default: ''
+  - name: acrpassword
+    default: ''
+  - name: containerRegistry
+    default: ''
+  - name: chartPath
+    default: 'latest'
+  - name: chartArchiveFile
+    default: ''
+  - name: tag
+    default: '1.0.0'
+    
+- stage: Helm
+  displayName: Helm Package and Push Stage
+  jobs:
+    - job: HelmPackageAndPush
+      displayName: Helm Package and Push Artifacts to ACR
+      pool: 
+        vmImage: $(vmImageName)
+      steps:
+      - script: |
+          echo $(acrpassword) | helm registry login $(containerRegistry) -u $(acruser) --password-stdin
+        displayName: Login to ACR using Helm
+      - script: |
+          helm package --app-version $(tag) --version $(tag) ./$(chartPath)
+        displayName: Package the chart directory into a chart archive
+      - script: |
+          helm push $(chartArchiveFile) oci://$(containerRegistry)
+        displayName: Push chart archive to ACR
