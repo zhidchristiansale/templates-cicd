@@ -21,14 +21,14 @@ stages:
     - job: HelmPackageAndPush
       displayName: Helm Package and Push Artifacts to ACR
       pool: 
-        vmImage: ${{ vmImageName }}
+        vmImage: ${{ parameters.vmImageName }}
       steps:
       - script: |
-          echo ${{ acrpassword }} | helm registry login ${{ containerRegistry }} -u ${{ acruser }} --password-stdin
+          echo ${{ parameters.acrpassword }} | helm registry login ${{ parameters.containerRegistry }} -u ${{ parameters.acruser }} --password-stdin
         displayName: Login to ACR using Helm
       - script: |
-          helm package --app-version ${{ tag }} --version ${{ tag }} ./${{ chartPath }}
+          helm package --app-version ${{ parameters.tag }} --version ${{ parameters.tag }} ./${{ parameters.chartPath }}
         displayName: Package the chart directory into a chart archive
       - script: |
-          helm push ${{ chartArchiveFile }} oci://${{ containerRegistry }}
+          helm push ${{ parameters.chartArchiveFile }} oci://${{ parameters.containerRegistry }}
         displayName: Push chart archive to ACR
